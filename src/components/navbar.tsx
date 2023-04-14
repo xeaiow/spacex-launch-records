@@ -42,7 +42,7 @@ const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
       <div className="container-fluid">
-        <div className="navbar-brand">SpaceX Launches</div>
+        <a href="/" className="navbar-brand">SpaceX Launches</a>
         <button className="navbar-toggler" type="button">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -54,7 +54,7 @@ const Navbar = () => {
               onKeyDown={handleKeyDown}
               className="form-control me-2"
               type="search"
-              placeholder="Search"
+              placeholder="Search id"
               aria-label="Search"
             />
             <button className="btn btn-success" onClick={handleSearch}>Search</button>
