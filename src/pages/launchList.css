@@ -1,0 +1,14 @@
+.wireframe {
+  margin-top: 80px;
+}
+
+.loadingContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); 
+}
+
+.table-condensed {
+  font-size: 18px;
+}
