@@ -6,6 +6,7 @@ export const GET_LAUNCHES = gql`
       id
       mission_name
       launch_date_local
+      launch_date_unix
       rocket {
         rocket_name
         rocket_type
@@ -20,6 +21,7 @@ export const GET_LAUNCH = gql`
       id
       mission_name
       launch_date_local
+      launch_date_unix
       rocket {
         rocket_name
         rocket_type

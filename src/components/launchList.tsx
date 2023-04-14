@@ -3,6 +3,7 @@ import LoadingPage from './loadingPage';
 import { GET_LAUNCHES } from '../hooks/launches/useGetLaunshes';
 import { useQuery, useReactiveVar } from '@apollo/client';
 import { launchesVar, totalPagesVar, currentPageVar } from '../common/cache';
+import { prettyDateFormat, unixConvertDate } from '../utils/date';
 
 const LaunchList = () => {
   const launchesData = useReactiveVar(launchesVar);
@@ -42,13 +43,22 @@ const LaunchList = () => {
             id,
             mission_name,
             launch_date_local,
+            launch_date_unix,
             rocket: { rocket_name, rocket_type }
           }: Launch) => (
             <tr key={`${id}-${mission_name}`}>
-              <td>{mission_name}</td>
-              <td>{launch_date_local}</td>
-              <td>{rocket_name}</td>
-              <td>{rocket_type}</td>
+              <td>
+                {mission_name}
+                </td>
+              <td>
+                {unixConvertDate(launch_date_unix)}
+                <br />
+                {prettyDateFormat(launch_date_local)}
+              </td>
+              <td>
+                {rocket_name}</td>
+              <td>
+                {rocket_type}</td>
             </tr>
           ))
         }
