@@ -1,32 +1,37 @@
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, KeyboardEvent } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { GET_LAUNCH } from '../hooks/launches/useGetLaunshes';
-import { launchesVar } from '../common/cache';
-import LoadingPage from './loadingPage';
-import ErrorPage from './errorPage';
+import { currentPageVar, launchesVar, totalPagesVar } from '../common/cache';
 
 const Navbar = () => {
   const [searchInput, setSearchInput] = useState<string>('');
 
-  const [searchLaunch, { loading, error }] = useLazyQuery(GET_LAUNCH, {
+  const [searchLaunch] = useLazyQuery(GET_LAUNCH, {
     onCompleted: (data) => {
-      launchesVar([data?.launch]);
+      if (data?.launch) {
+        launchesVar([data?.launch]);
+      }
+
+      currentPageVar(1);
+      totalPagesVar(1);
+    },
+    onError: () => {
+      alert('No record found.');
+      setSearchInput('');
     }
   });
-
-  if (loading) {
-    return <LoadingPage />
-  }
-
-  if (error) {
-    return <ErrorPage />
-  }
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
   };
 
-  const handleChangeTheme = () => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const handleSearch = () => {
     searchLaunch({
       variables: {
         id: searchInput,
@@ -41,16 +46,19 @@ const Navbar = () => {
         <button className="navbar-toggler" type="button">
           <span className="navbar-toggler-icon"></span>
         </button>
-        <div className="collapse navbar-collapse" id="navbarCollapse">
-          <input
-            value={searchInput}
-            onChange={handleSearchInput}
-            className="form-control me-2"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-          />
-          <button className="btn btn-success" onClick={handleChangeTheme}>Search</button>
+        <div className="collapse navbar-collapse">
+          <div className="d-flex">
+            <input
+              value={searchInput}
+              onChange={handleSearchInput}
+              onKeyDown={handleKeyDown}
+              className="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+            />
+            <button className="btn btn-success" onClick={handleSearch}>Search</button>
+          </div>
         </div>
       </div>
     </nav>
