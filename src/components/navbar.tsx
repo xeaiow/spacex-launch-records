@@ -3,7 +3,9 @@ import { useReactiveVar } from '@apollo/client';
 import { utcConvertTimestamp, dateFormat } from '../utils/date';
 import {
   launchesVar,
-  filteredLaunchesVar
+  filteredLaunchesVar,
+  totalPagesVar,
+  currentPageVar,
 } from '../common/cache';
 
 const Navbar = () => {
@@ -21,19 +23,25 @@ const Navbar = () => {
   };
 
   const handleSearch = () => {
-    filteredLaunchesVar(
-      launchesData
-        .filter((launch) => launch.mission_name === searchInput
-          ||
-          launch.rocket.rocket_name === searchInput
-          ||
-          launch.rocket.rocket_type === searchInput
-          ||
-          utcConvertTimestamp(launch.launch_date_utc)
-          ===
-          dateFormat(searchInput)
-        )
-    );
+    const perPage = 20;
+    const result = launchesData
+      .filter((launch) => launch.mission_name === searchInput
+        ||
+        launch.rocket.rocket_name === searchInput
+        ||
+        launch.rocket.rocket_type === searchInput
+        ||
+        utcConvertTimestamp(launch.launch_date_utc)
+        ===
+        dateFormat(searchInput)
+      );
+
+    filteredLaunchesVar(result);
+    const pagination = Math.ceil(result.length / perPage);
+
+    totalPagesVar(pagination);
+    currentPageVar(1);
+    setSearchInput('');
   };
 
   return (

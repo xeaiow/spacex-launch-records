@@ -1,12 +1,14 @@
 import Navbar from '../components/navbar';
 import LaunchList from '../components/launchList';
 import Pagination from '../components/pagination';
+import CleanSearch from '../components/cleanSearch';
 import { useReactiveVar } from '@apollo/client';
-import { filteredLaunchesVar } from '../common/cache';
+import { filteredLaunchesVar, launchesVar } from '../common/cache';
 import './launch.css';
 
 const Launch = () => {
   const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
+  const launchesData = useReactiveVar(launchesVar);
 
   return (
     <>
@@ -14,8 +16,15 @@ const Launch = () => {
       <main className="container">
         <div className="p-2 rounded wireframe">
           <div className="row justify-content-between pb-4">
-            <div className="col">
+            <div className="col-10">
               <h1>SpaceX Launch Schedule</h1>
+            </div>
+            <div className="col-2">
+              {
+                launchesData?.length !== filteredLaunchData?.length ? (
+                  <CleanSearch />
+                ) : null
+              }
             </div>
           </div>
           <LaunchList />
@@ -24,6 +33,7 @@ const Launch = () => {
               <Pagination />
             )
           }
+          <div>Found {filteredLaunchData?.length} records.</div>
         </div>
       </main>
     </>

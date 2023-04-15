@@ -33,6 +33,10 @@ const LaunchList = () => {
     return <LoadingPage />
   }
 
+  if (!getLaunches?.length) {
+    return <div>No record found.</div>
+  }
+
   return (
     <table className="table table-hover">
       <thead className="table-condensed">
