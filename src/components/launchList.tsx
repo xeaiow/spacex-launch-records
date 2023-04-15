@@ -2,26 +2,32 @@ import { Launch } from '../interfaces/launch';
 import LoadingPage from './loadingPage';
 import { GET_LAUNCHES } from '../hooks/launches/useGetLaunshes';
 import { useQuery, useReactiveVar } from '@apollo/client';
-import { launchesVar, totalPagesVar, currentPageVar } from '../common/cache';
+import {
+  launchesVar,
+  totalPagesVar,
+  currentPageVar,
+  filteredLaunchesVar
+} from '../common/cache';
 import { prettyDateFormat, unixConvertDate } from '../utils/date';
 
 const LaunchList = () => {
-  const launchesData = useReactiveVar(launchesVar);
+  const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
   const currentPage = useReactiveVar(currentPageVar);
   const perPage = 20;
 
   const { loading, } = useQuery(GET_LAUNCHES, {
     onCompleted: (data) => {
       launchesVar(data?.launches);
+      filteredLaunchesVar(data?.launches);
 
-      const pagination = Math.ceil(data?.launches?.length / perPage);
+      const pagination = Math.ceil(data?.launches.length / perPage);
       totalPagesVar(pagination);
     }
   });
 
   const start = (currentPage - 1) * perPage;
   const end = start + perPage;
-  const getLaunches = launchesData.slice(start, end);
+  const getLaunches = filteredLaunchData.slice(start, end);
 
   if (loading) {
     return <LoadingPage />
@@ -49,7 +55,7 @@ const LaunchList = () => {
             <tr key={`${id}-${mission_name}`}>
               <td>
                 {mission_name}
-                </td>
+              </td>
               <td>
                 {unixConvertDate(launch_date_unix)}
                 <br />

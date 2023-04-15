@@ -1,25 +1,14 @@
 import { useState, ChangeEvent, KeyboardEvent } from 'react';
-import { useLazyQuery } from '@apollo/client';
-import { GET_LAUNCH } from '../hooks/launches/useGetLaunshes';
-import { currentPageVar, launchesVar, totalPagesVar } from '../common/cache';
+import { useReactiveVar } from '@apollo/client';
+import { utcConvertTimestamp, dateFormat } from '../utils/date';
+import {
+  launchesVar,
+  filteredLaunchesVar
+} from '../common/cache';
 
 const Navbar = () => {
   const [searchInput, setSearchInput] = useState<string>('');
-
-  const [searchLaunch] = useLazyQuery(GET_LAUNCH, {
-    onCompleted: (data) => {
-      if (data?.launch) {
-        launchesVar([data?.launch]);
-      }
-
-      currentPageVar(1);
-      totalPagesVar(1);
-    },
-    onError: () => {
-      alert('No record found.');
-      setSearchInput('');
-    }
-  });
+  const launchesData = useReactiveVar(launchesVar);
 
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchInput(e.target.value);
@@ -32,11 +21,19 @@ const Navbar = () => {
   };
 
   const handleSearch = () => {
-    searchLaunch({
-      variables: {
-        id: searchInput,
-      },
-    })
+    filteredLaunchesVar(
+      launchesData
+        .filter((launch) => launch.mission_name === searchInput
+          ||
+          launch.rocket.rocket_name === searchInput
+          ||
+          launch.rocket.rocket_type === searchInput
+          ||
+          utcConvertTimestamp(launch.launch_date_utc)
+          ===
+          dateFormat(searchInput)
+        )
+    );
   };
 
   return (

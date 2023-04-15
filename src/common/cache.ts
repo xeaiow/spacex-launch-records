@@ -8,3 +8,5 @@ export const totalPagesVar = makeVar(totalPages);
 export const offset: number = 0;
 export const launches: Launch[] = [];
 export const launchesVar = makeVar(launches);
+export const filteredLaunches: Launch[] = [];
+export const filteredLaunchesVar = makeVar(filteredLaunches);

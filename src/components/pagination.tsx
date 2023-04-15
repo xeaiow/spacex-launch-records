@@ -1,12 +1,12 @@
 import { useReactiveVar } from '@apollo/client';
-import { currentPageVar, launchesVar, totalPagesVar } from '../common/cache';
+import { currentPageVar, filteredLaunchesVar, totalPagesVar } from '../common/cache';
 
 const Pagination = () => {
-  const launchesData = useReactiveVar(launchesVar);
+  const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
   const currentPage = useReactiveVar(currentPageVar);
   const totalPages = useReactiveVar(totalPagesVar);
 
-  if (!launchesData.length) {
+  if (!filteredLaunchData?.length) {
     return null;
   }
 
