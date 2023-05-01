@@ -1,0 +1,17 @@
+.sort-icon {
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.unsorted {
+  display: none;
+}
+
+.sorted {
+  display: inline-block;
+  color: red;
+}
+
+.sort-column:hover .sort-icon{
+  display: inline-block;
+}
