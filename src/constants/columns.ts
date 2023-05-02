@@ -1,30 +1,22 @@
 export const columns = [
   {
-    name: 'mission',
+    name: 'mission_name',
     label: 'Mission',
-    sort: true,
-    orderBy: 'asc',
     width: '120px',
   },
   {
-    name: 'date',
+    name: 'launch_date_utc',
     label: 'Date',
-    sort: true,
-    orderBy: '',
     width: '100px',
   },
   {
-    name: 'name',
+    name: 'rocket_name',
     label: 'Name',
-    sort: true,
-    orderBy: 'desc',
     width: '100px',
   },
   {
-    name: 'type',
+    name: 'rocket_type',
     label: 'Type',
-    sort: true,
-    orderBy: '',
     width: '50px',
   }
 ];

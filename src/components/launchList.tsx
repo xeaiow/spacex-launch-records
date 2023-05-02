@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Launch } from '../interfaces/launch';
 import LoadingPage from './loadingPage';
 import { GET_LAUNCHES } from '../hooks/launches/useGetLaunshes';
@@ -16,24 +16,52 @@ import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 import './launchList.css';
 
 const LaunchList = () => {
-  const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
+  const [currentSorted, setCurrentSorted] = useState({
+    columnName: '',
+    orderBy: '',
+  });
+  const [launchColumns, setLaunchColumns] = useState<LaunchColumn[]>(columns);
+  let filteredLaunchData = useReactiveVar(filteredLaunchesVar);
   const currentPage = useReactiveVar(currentPageVar);
   const perPage = 20;
-  const [launchColumns, setLaunchColumns] = useState<LaunchColumn[]>(columns);
 
-  const { loading, } = useQuery(GET_LAUNCHES, {
+  const { loading } = useQuery(GET_LAUNCHES, {
     onCompleted: (data) => {
-      launchesVar(data?.launches);
-      filteredLaunchesVar(data?.launches);
+      const result = data?.launches.map((launch: Launch) => {
+        return {
+          ...launch,
+          rocket_name: launch.rocket.rocket_name,
+          rocket_type: launch.rocket.rocket_type,
+        }
+      });
 
-      const pagination = Math.ceil(data?.launches.length / perPage);
+      launchesVar(result);
+      filteredLaunchesVar(result);
+
+      const pagination = Math.ceil(result.length / perPage);
       totalPagesVar(pagination);
     }
   });
 
-  const start = (currentPage - 1) * perPage;
-  const end = start + perPage;
-  const getLaunches = filteredLaunchData.slice(start, end);
+  const getLaunches = useMemo(() => {
+    const start = (currentPage - 1) * perPage;
+    const end = start + perPage;
+    let result: Launch[] = [...filteredLaunchData];
+
+    const { columnName, orderBy } = currentSorted;
+    switch (orderBy) {
+      case 'asc':
+        result = result.sort((a, b) => (a[columnName as keyof typeof a] > b[columnName as keyof typeof a]) ? 1 : -1);
+        break;
+      case 'desc':
+        result = result.sort((a, b) => (a[columnName as keyof typeof a] < b[columnName as keyof typeof a]) ? 1 : -1);
+        break;
+      default:
+        break;
+    }
+
+    return result.slice(start, end);
+  }, [filteredLaunchData, currentSorted, currentPage]);
 
   if (loading) {
     return <LoadingPage />
@@ -43,42 +71,44 @@ const LaunchList = () => {
     return <div>No record found.</div>
   }
 
-  const sort = (order: string, field: string) => {
-    const indexOfSort = columns.findIndex((column) => column.name === field);
-
-    if (indexOfSort < 0) {
-      return false;
-    }
-
-    const newColumns = [...columns];
-    console.log(order);
-    newColumns[indexOfSort].orderBy = order;
-    setLaunchColumns(newColumns);
-  };
-
   const renderHeadSort = (column: LaunchColumn) => {
-    if (!column.orderBy) {
+    if (!currentSorted.orderBy || column.name !== currentSorted.columnName) {
       return (
         <TiArrowSortedUp
           className="sort-icon unsorted"
-          onClick={() => { sort('asc', column.name) }}
+          onClick={() => {
+            setCurrentSorted({
+              columnName: column.name,
+              orderBy: 'asc',
+            })
+          }}
         />
       );
     }
 
-    switch (column.orderBy) {
+    switch (currentSorted.orderBy) {
       case 'asc':
         return (
           <TiArrowSortedUp
             className="sort-icon sorted"
-            onClick={() => { sort('desc', column.name) }}
+            onClick={() => {
+              setCurrentSorted({
+                columnName: column.name,
+                orderBy: 'desc',
+              })
+            }}
           />
         );
       case 'desc':
         return (
           <TiArrowSortedDown
             className="sort-icon sorted"
-            onClick={() => { sort('', column.name) }}
+            onClick={() => {
+              setCurrentSorted({
+                columnName: column.name,
+                orderBy: '',
+              })
+            }}
           />
         );
       default:
