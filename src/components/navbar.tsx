@@ -59,10 +59,12 @@ const Navbar = () => {
               onKeyDown={handleKeyDown}
               className="form-control me-2"
               type="search"
-              placeholder="Search id"
+              placeholder="Search..."
               aria-label="Search"
             />
-            <button className="btn btn-success" onClick={handleSearch}>Search</button>
+            <button className="btn btn-success" onClick={handleSearch}>
+              Search
+            </button>
           </div>
         </div>
       </div>

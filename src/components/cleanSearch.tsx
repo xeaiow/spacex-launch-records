@@ -5,6 +5,7 @@ import {
   totalPagesVar,
   currentPageVar
 } from '../common/cache';
+import { TiDelete } from 'react-icons/ti';
 
 const CleanSearch = () => {
   const perPage = 20;
@@ -21,10 +22,11 @@ const CleanSearch = () => {
   return (
     <button
       type="button"
-      className="btn btn-dark"
+      className="btn btn-primary"
       onClick={handleClearSearch}
     >
-      清除搜尋
+      Clear search results
+      <TiDelete style={{ fontSize: 24, marginTop: -3 }} />
     </button>
   );
 };
