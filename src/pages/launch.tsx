@@ -1,7 +1,7 @@
 import Navbar from '../components/navbar';
 import LaunchList from '../components/launchList';
 import Pagination from '../components/pagination';
-import CleanSearch from '../components/cleanSearch';
+import ClearSearch from '../components/clearSearch';
 import { useReactiveVar } from '@apollo/client';
 import { filteredLaunchesVar, launchesVar } from '../common/cache';
 import './launch.css';
@@ -21,7 +21,7 @@ const Launch = () => {
             </div>
             <div className="col-2">
               {
-                launchesData?.length !== filteredLaunchData?.length && <CleanSearch />
+                launchesData?.length !== filteredLaunchData?.length && <ClearSearch />
               }
             </div>
           </div>

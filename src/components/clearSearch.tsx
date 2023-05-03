@@ -6,8 +6,9 @@ import {
   currentPageVar
 } from '../common/cache';
 import { TiDelete } from 'react-icons/ti';
+import './clearSearch.css';
 
-const CleanSearch = () => {
+const ClearSearch = () => {
   const perPage = +import.meta.env.VITE_PER_PAGE;
   const launchesData = useReactiveVar(launchesVar);
 
@@ -25,10 +26,10 @@ const CleanSearch = () => {
       className="btn btn-primary"
       onClick={handleClearSearch}
     >
-      Clear search results
-      <TiDelete style={{ fontSize: 24, marginTop: -3 }} />
+      Clear
+      <TiDelete className="clear-button" />
     </button>
   );
 };
 
-export default CleanSearch;
+export default ClearSearch;

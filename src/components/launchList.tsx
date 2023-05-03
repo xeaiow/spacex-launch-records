@@ -11,7 +11,11 @@ import {
   currentPageVar,
   filteredLaunchesVar
 } from '../common/cache';
-import { prettyDateFormat, unixConvertDate } from '../utils/date';
+import {
+  prettyDateFormat,
+  unixConvertDate,
+  getCurrTimezoneDate,
+} from '../utils/date';
 import { TiArrowSortedUp, TiArrowSortedDown } from 'react-icons/ti';
 import './launchList.css';
 
@@ -138,6 +142,7 @@ const LaunchList = () => {
           getLaunches?.map(({
             id,
             mission_name,
+            launch_date_utc,
             launch_date_local,
             launch_date_unix,
             rocket: { rocket_name, rocket_type }
@@ -146,10 +151,13 @@ const LaunchList = () => {
               <td>
                 {mission_name}
               </td>
-              <td>
-                {unixConvertDate(launch_date_unix)}
-                <br />
-                {prettyDateFormat(launch_date_local)}
+              <td title={`Local time: ${getCurrTimezoneDate(launch_date_utc)}`}>
+                <span className="mission-date">
+                  {unixConvertDate(launch_date_unix)}
+                </span>
+                <span>
+                  {prettyDateFormat(launch_date_local)}
+                </span>
               </td>
               <td>
                 {rocket_name}</td>
