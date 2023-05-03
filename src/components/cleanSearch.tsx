@@ -8,7 +8,7 @@ import {
 import { TiDelete } from 'react-icons/ti';
 
 const CleanSearch = () => {
-  const perPage = 20;
+  const perPage = +import.meta.env.VITE_PER_PAGE;
   const launchesData = useReactiveVar(launchesVar);
 
   const handleClearSearch = () => {

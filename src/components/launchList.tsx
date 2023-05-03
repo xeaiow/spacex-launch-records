@@ -23,7 +23,7 @@ const LaunchList = () => {
 
   const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
   const currentPage = useReactiveVar(currentPageVar);
-  const perPage = 20;
+  const perPage = +import.meta.env.VITE_PER_PAGE;
 
   const { loading } = useQuery(GET_LAUNCHES, {
     onCompleted: (data) => {
