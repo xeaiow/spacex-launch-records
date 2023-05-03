@@ -119,8 +119,12 @@ const LaunchList = () => {
         <tr>
           {
             columns?.map((column) => (
-              <th key={column.label} style={{ width: column.width }}>
+              <th
+                key={column.label}
+                style={{ width: column.width }}
+              >
                 <div className="sort-column">
+                  <span className="head-icon">{column.icon}</span>
                   {column.label}
                   {renderHeadSort(column)}
                 </div>
