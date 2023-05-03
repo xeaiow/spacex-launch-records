@@ -9,7 +9,7 @@
 
 .sorted {
   display: inline-block;
-  color: red;
+  color: #f6003c;
 }
 
 .sort-column:hover .sort-icon{
