@@ -22,22 +22,35 @@ const Navbar = () => {
     }
   };
 
+  const normalizeString = (str: string) => {
+    if (!str) {
+      return str;
+    }
+    return str.replace(/\s/g, '').toLowerCase();
+  };
+
   const handleSearch = () => {
-    const perPage = 20;
+    const perPage = +import.meta.env.VITE_PER_PAGE;
+    const keyword = normalizeString(searchInput);
     const result = launchesData
-      .filter((launch) => launch.mission_name === searchInput
+      .filter(({
+        mission_name,
+        rocket_name,
+        rocket_type,
+        launch_date_utc,
+      }) => normalizeString(mission_name) === keyword
+      ||
+      normalizeString(rocket_name) === keyword
+      ||
+      normalizeString(rocket_type) === keyword
         ||
-        launch.rocket.rocket_name === searchInput
-        ||
-        launch.rocket.rocket_type === searchInput
-        ||
-        utcConvertTimestamp(launch.launch_date_utc)
+        utcConvertTimestamp(launch_date_utc)
         ===
-        dateFormat(searchInput)
+        dateFormat(keyword)
       );
 
     filteredLaunchesVar(result);
-    const pagination = Math.ceil(result.length / perPage);
+    const pagination = Math.ceil(result?.length / perPage);
 
     totalPagesVar(pagination);
     currentPageVar(1);

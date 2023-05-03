@@ -21,19 +21,17 @@ const Launch = () => {
             </div>
             <div className="col-2">
               {
-                launchesData?.length !== filteredLaunchData?.length ? (
-                  <CleanSearch />
-                ) : null
+                launchesData?.length !== filteredLaunchData?.length && <CleanSearch />
               }
             </div>
           </div>
           <LaunchList />
           {
-            filteredLaunchData?.length === 1 ? null : (
-              <Pagination />
-            )
+            filteredLaunchData?.length !== 1 && <Pagination />
           }
-          <div>Found {filteredLaunchData?.length} records.</div>
+          {
+            filteredLaunchData?.length > 0 && <div>Found {filteredLaunchData?.length} records.</div>
+          }
         </div>
       </main>
     </>
