@@ -19,7 +19,12 @@ Install the required npm modules.
 npm install
 ```
 
-Run program.
+Run Development mode.
 ```shell
 npm run dev
+```
+
+Run program.
+```shell
+npm run preview
 ```
