@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Launch } from '../interfaces/launch';
 import LoadingPage from './loadingPage';
 import { GET_LAUNCHES } from '../hooks/launches/useGetLaunshes';
@@ -20,14 +20,14 @@ const LaunchList = () => {
     columnName: '',
     orderBy: '',
   });
-  const [launchColumns, setLaunchColumns] = useState<LaunchColumn[]>(columns);
-  let filteredLaunchData = useReactiveVar(filteredLaunchesVar);
+
+  const filteredLaunchData = useReactiveVar(filteredLaunchesVar);
   const currentPage = useReactiveVar(currentPageVar);
   const perPage = 20;
 
   const { loading } = useQuery(GET_LAUNCHES, {
     onCompleted: (data) => {
-      const result = data?.launches.map((launch: Launch) => {
+      const launches = data?.launches.map((launch: Launch) => {
         return {
           ...launch,
           rocket_name: launch.rocket.rocket_name,
@@ -35,85 +35,82 @@ const LaunchList = () => {
         }
       });
 
-      launchesVar(result);
-      filteredLaunchesVar(result);
-
-      const pagination = Math.ceil(result.length / perPage);
-      totalPagesVar(pagination);
+      launchesVar(launches);
+      filteredLaunchesVar(launches);
     }
   });
 
-  const getLaunches = useMemo(() => {
+  const pagination = useMemo(() => {
+    return Math.ceil(filteredLaunchData.length / perPage)
+  }, [
+    filteredLaunchData.length,
+    perPage,
+  ]);
+
+  useEffect(() => {
+    totalPagesVar(pagination);
+  }, [pagination]);
+
+  const getPagination = () => {
     const start = (currentPage - 1) * perPage;
     const end = start + perPage;
-    let result: Launch[] = [...filteredLaunchData];
-
-    const { columnName, orderBy } = currentSorted;
-    switch (orderBy) {
-      case 'asc':
-        result = result.sort((a, b) => (a[columnName as keyof typeof a] > b[columnName as keyof typeof a]) ? 1 : -1);
-        break;
-      case 'desc':
-        result = result.sort((a, b) => (a[columnName as keyof typeof a] < b[columnName as keyof typeof a]) ? 1 : -1);
-        break;
-      default:
-        break;
+    return {
+      start,
+      end,
     }
+  };
 
-    return result.slice(start, end);
-  }, [filteredLaunchData, currentSorted, currentPage]);
+  const getLaunches = useMemo(() => {
+    const { start, end } = getPagination();
+    const { columnName, orderBy } = currentSorted;
+
+    return [...filteredLaunchData]
+      .sort((a, b) => {
+        const valueA = a[columnName as keyof typeof a];
+        const valueB = b[columnName as keyof typeof b];
+
+        if (orderBy === 'asc') {
+          return valueA > valueB ? 1 : -1;
+        } else if (orderBy === 'desc') {
+          return valueA < valueB ? 1 : -1;
+        } else {
+          return 0;
+        }
+      })
+      .slice(start, end);
+
+  }, [
+    filteredLaunchData,
+    currentSorted,
+    currentPage
+  ]);
 
   if (loading) {
-    return <LoadingPage />
+    return <LoadingPage />;
   }
 
   if (!getLaunches?.length) {
-    return <div>No record found.</div>
+    return <div>No record found.</div>;
   }
 
-  const renderHeadSort = (column: LaunchColumn) => {
-    if (!currentSorted.orderBy || column.name !== currentSorted.columnName) {
-      return (
-        <TiArrowSortedUp
-          className="sort-icon unsorted"
-          onClick={() => {
-            setCurrentSorted({
-              columnName: column.name,
-              orderBy: 'asc',
-            })
-          }}
-        />
-      );
-    }
-
-    switch (currentSorted.orderBy) {
-      case 'asc':
-        return (
-          <TiArrowSortedUp
-            className="sort-icon sorted"
-            onClick={() => {
-              setCurrentSorted({
-                columnName: column.name,
-                orderBy: 'desc',
-              })
-            }}
-          />
-        );
-      case 'desc':
-        return (
-          <TiArrowSortedDown
-            className="sort-icon sorted"
-            onClick={() => {
-              setCurrentSorted({
-                columnName: column.name,
-                orderBy: '',
-              })
-            }}
-          />
-        );
-      default:
-        break;
-    }
+  const renderHeadSort = ({ name }: LaunchColumn) => {
+    const isSorted = currentSorted.columnName === name;
+    const orderBy = isSorted ? currentSorted.orderBy : '';
+    const sortIcons = {
+      '': <TiArrowSortedUp
+        className="sort-icon unsorted"
+        onClick={() => setCurrentSorted({ columnName: name, orderBy: 'asc' })}
+      />,
+      'asc': <TiArrowSortedUp
+        className="sort-icon sorted"
+        onClick={() => setCurrentSorted({ columnName: name, orderBy: 'desc' })}
+      />,
+      'desc': <TiArrowSortedDown
+        className="sort-icon sorted"
+        onClick={() => setCurrentSorted({ columnName: name, orderBy: '' })}
+      />,
+    };
+    return sortIcons[orderBy as keyof typeof sortIcons];
   };
 
   return (
@@ -121,7 +118,7 @@ const LaunchList = () => {
       <thead className="table-condensed">
         <tr>
           {
-            launchColumns?.map((column) => (
+            columns?.map((column) => (
               <th key={column.label} style={{ width: column.width }}>
                 <div className="sort-column">
                   {column.label}
